@@ -12,6 +12,8 @@ var ctx;
 var resource;
 var t = Object.create(null);
 
+var wrap = document.getElementById('wrap');
+var score = document.getElementById('score');
 var container = document.getElementById('container');
 var ctx = container.getContext('2d');
 var pixData;
@@ -24,6 +26,8 @@ var rowNumber = 10;
 var gScale = 1.6;
 var gUnit = 0;
 var drawRect = Object.create(null);
+
+var balls = [];
 
 var colors = [
     'red',
@@ -50,7 +54,7 @@ function initGlobal() {
     container.height = gHeight;
 
     if(gHeight / gWidth > gScale) { // 缩短高度
-        gUnit = (gWidth - 20) / 10;
+        gUnit = ((gWidth - 20) / 10) >> 0;
 
         drawRect.x = 10;
         drawRect.width = gWidth - 20;
@@ -58,7 +62,7 @@ function initGlobal() {
         drawRect.height = gUnit * 16;
         drawRect.y = (gHeight - drawRect.height) / 2;
     } else {
-        gUnit = (gHeight - 20) / 16;
+        gUnit = ((gHeight - 20) / 16) >> 0;
 
         drawRect.y = 10;
         drawRect.height = (gHeight - 20);
@@ -67,6 +71,15 @@ function initGlobal() {
         drawRect.x = (gWidth - drawRect.width) / 2;
     }
 
+    // var s = 300 / gUnit;
+
+    wrap.style.backgroundSize = gUnit / 2 * 4 + 'px';
+    wrap.style.backgroundPositionX = (drawRect.x - (gUnit / 4) - gUnit / 12) + 'px';
+    wrap.style.backgroundPositionY = (drawRect.y - (gUnit / 4) - gUnit / 12) + 'px';
+
+    /*wrap.style.backgroundPositionX = (drawRect.x) + 'px';
+    wrap.style.backgroundPositionY = (drawRect.y) + 'px';*/
+
 }
 
 function initUI() {
@@ -74,6 +87,7 @@ function initUI() {
 
     getSpace();
     getBall();
+    initBalls();
     initEvent();
 }
 
@@ -88,7 +102,7 @@ function getSpace() {
             space[x + '_' + y] = 1;
 
             drawSpace(x, y);
-            // return ;
+
         } else {
             i--;
         }
@@ -96,6 +110,7 @@ function getSpace() {
 }
 
 function drawSpace(x, y) {
+    return ;
     ctx.beginPath();
     ctx.fillStyle = 'white';
     ctx.rect(drawRect.x + x * gUnit, drawRect.y + y * gUnit, gUnit, gUnit);
@@ -150,9 +165,10 @@ function drawBall(x, y, color) {
 
 function initEvent() {
     container.addEventListener('touchstart', function(e) {
+
         var x = (e.targetTouches[0].clientX >> 0) * 2;
         var y = (e.targetTouches[0].clientY >> 0) * 2;
-
+        console.log(x, y);
         if(x < drawRect.x || x > (drawRect.width + drawRect.x)) {
             return ;
         }
@@ -167,9 +183,14 @@ function initEvent() {
 
 
     }, false);
+
+    score.addEventListener('webkitAnimationEnd', function(e) {
+        this.className = 'score';
+    });
 }
 
 function checkXY(x, y) {
+    console.log('check');
     var sx = ((x - drawRect.x) / gUnit) >> 0;
     var sy = ((y - drawRect.y) / gUnit) >> 0;
 
@@ -177,6 +198,8 @@ function checkXY(x, y) {
     var bottom = {};
     var left = {};
     var right = {};
+
+    var time = 0;
 
     if(!space[sx + '_' + sy]) {
         console.log('false');
@@ -190,7 +213,10 @@ function checkXY(x, y) {
     bottom = getPoint(x, y, 0, gUnit);
     left = getPoint(x, y, -1 * (gUnit), 0);
     right = getPoint(x, y, gUnit, 0);
-
+/*console.log(top);
+console.log(bottom);
+console.log(left);
+console.log(right);*/
     if(top.ret === bottom.ret) {
         top.dead = true;
         bottom.dead = true;
@@ -228,8 +254,9 @@ console.log(left);*/
 
     if(top.dead) {
         if(top.ret !== 0) {
+            time++;
             setPix(top.x, top.y);
-            disappear(top.x, top.y);
+            disappear(top.x, top.y, top.ret);
 
             top.x = ((top.x - drawRect.x) / gUnit) >> 0;
             top.y = ((top.y - drawRect.y) / gUnit) >> 0;
@@ -240,8 +267,9 @@ console.log(left);*/
 
     if(bottom.dead) {
         if(bottom.ret !== 0) {
+            time++;
             setPix(bottom.x, bottom.y);
-            disappear(bottom.x, bottom.y);
+            disappear(bottom.x, bottom.y, bottom.ret);
 
             bottom.x = ((bottom.x - drawRect.x) / gUnit) >> 0;
             bottom.y = ((bottom.y - drawRect.y) / gUnit) >> 0;
@@ -252,8 +280,9 @@ console.log(left);*/
 
     if(left.dead) {
         if(left.ret !== 0) {
+            time++;
             setPix(left.x, left.y);
-            disappear(left.x, left.y);
+            disappear(left.x, left.y, left.ret);
 
             left.x = ((left.x - drawRect.x) / gUnit) >> 0;
             left.y = ((left.y - drawRect.y) / gUnit) >> 0;
@@ -265,8 +294,9 @@ console.log(left);*/
 
     if(right.dead) {
         if(right.ret !== 0) {
+            time++;
             setPix(right.x, right.y);
-            disappear(right.x, right.y);
+            disappear(right.x, right.y, right.ret);
 
             right.x = ((right.x - drawRect.x) / gUnit) >> 0;
             right.y = ((right.y - drawRect.y) / gUnit) >> 0;
@@ -275,8 +305,12 @@ console.log(left);*/
         }
     }
 
+    score.className = 'score';
 
-    // console.log(top, bottom, left, right);
+    score.innerText = time > 0 ? ('+' + (5 * time)) : '-5';
+
+    score.className = 'score move-score';
+
 }
 
 function getPoint(x, y, dirX, dirY) {
@@ -287,12 +321,20 @@ function getPoint(x, y, dirX, dirY) {
     while(ret === 255255255) {
         nextX += dirX;
         nextY += dirY;
-
-        ret = getPix(nextX, nextY);
-        // drawDebug(nextX, nextY);
-        if(isNaN(ret)) {
+        if(nextY < 0 || nextX < 0 || nextX > gWidth || nextY > gHeight) {
             ret = 0;
+        } else {
+            ret = getPix(nextX, nextY);
+            // drawDebug(nextX, nextY);
+
+            if(ret === 0) {
+                ret = 255255255;
+            }
+            if(isNaN(ret)) {
+                ret = 0;
+            }
         }
+        
     }
 
     return {
@@ -320,14 +362,9 @@ function getPix(x, y) {
     return r*1000000 + g*1000 + b;
 }
 
-function disappear(x, y) {
-    ctx.beginPath();
-    ctx.fillStyle = 'white';
-    ctx.rect(x - gUnit/2, y - gUnit/2, gUnit, gUnit);
-
-    // ctx.arc(x, y, gUnit / 3 + 4, 0, Math.PI * 2, false);
-    ctx.fill();
-    ctx.closePath();
+function disappear(x, y, color) {
+    move(x, y, color);
+    ctx.clearRect(x - gUnit/2, y - gUnit/2, gUnit, gUnit);
 }
 
 function drawDebug(x, y) {
@@ -336,6 +373,76 @@ function drawDebug(x, y) {
     ctx.arc(x, y, 5, 0, Math.PI * 2, false);
     ctx.fill();
     ctx.closePath();
+}
+
+function initBalls() {
+    var tmp = null;
+    for(var i = 0; i < 10; i++) {
+        tmp = createBall();
+
+        balls.push(tmp);
+    }
+
+}
+
+function createBall() {
+    var tmp = document.createElement('div');
+
+    tmp.className = 'ball';
+
+    tmp.style.width = gUnit / 3 + 'px';
+    tmp.style.height = gUnit / 3 + 'px';
+
+    document.body.appendChild(tmp);
+
+    tmp.addEventListener('webkitAnimationEnd', function() {
+        tmp.className = 'ball';
+
+        balls.unshift(tmp);
+    }, false);
+
+    return tmp;
+}
+
+function move(x, y, color) {
+    var tmp = balls.pop();
+
+    if(tmp === undefined) {
+        tmp = createBall();
+    }
+
+    tmp.style.backgroundColor = findColor(color);
+    tmp.style.top = y/2 - gUnit/6 + 'px';
+    tmp.style.left = x/2 - gUnit/6 + 'px';
+
+    tmp.className = 'ball move-ball';
+
+}
+
+function findColor(key) {
+    var value;
+    switch(key) {
+        case 255000000:
+            value = 'red';
+            break;
+        case 128128128:
+            value = 'grey';
+            break;
+        case 255:
+            value = 'blue';
+            break;
+        case 128000:
+            value = 'green';
+            break;
+        case 255165000:
+            value = 'orange';
+            break;
+        case 255192203:
+            value = 'pink';
+            break;
+    }
+
+    return value;
 }
 
 initUI();

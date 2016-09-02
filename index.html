@@ -5,28 +5,137 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 	<title></title>
 	<style>
+		@-webkit-keyframes ballMove {
+			0% {
+				-webkit-transform: translate3d(0, 0, 0);
+				transform: translate3d(0, 0, 0);
+			}
+			20% {
+				-webkit-transform: translate3d(0, -10px, 0);
+				transform: translate3d(0, -10px, 0);
+				opacity: 1;
+			}
+			100% {
+				-webkit-transform: translate3d(0, 300px, 0);
+				transform: translate3d(0, 300px, 0);
+				opacity: 0;
+			}
+		}
+		@keyframes ballMove {
+			0% {
+				-webkit-transform: translate3d(0, 0, 0);
+				transform: translate3d(0, 0, 0);
+			}
+			20% {
+				-webkit-transform: translate3d(0, -10px, 0);
+				transform: translate3d(0, -10px, 0);
+				opacity: 1;
+			}
+			100% {
+				-webkit-transform: translate3d(0, 300px, 0);
+				transform: translate3d(0, 300px, 0);
+				opacity: 0;
+			}
+		}
+		@-webkit-keyframes scoreMove {
+			0% {
+				-webkit-transform: translate3d(-50%, -50%, 0) scale(1, 1);
+				transform: translate3d(-50%, -50%, 0) scale(1, 1);
+			}
+			100% {
+				-webkit-transform: translate3d(-50%, -50%, 0) scale(1.2, 1.2);
+				transform: translate3d(-50%, -150%, 0) scale(1.2, 1.2);
+			}
+		}
+		@keyframes scoreMove {
+			0% {
+				-webkit-transform: translate3d(-50%, -50%, 0) scale(1, 1);
+				transform: translate3d(-50%, -50%, 0) scale(1, 1);
+			}
+			100% {
+				-webkit-transform: translate3d(-50%, -50%, 0) scale(1.2, 1.2);
+				transform: translate3d(-50%, -150%, 0) scale(1.2, 1.2);
+			}
+		}
 		html, body {
 			margin: 0;
 			padding: 0;
+			height: 100%;
+		}
+		.wrap {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			background-image: url(bg.png);
+			/* background-repeat: no-repeat; */
 		}
 		.container {
 		    -webkit-transform: scale(0.5, 0.5);
 		    transform: scale(0.5, 0.5);
 		    -webkit-transform-origin: left top;
 		    transform-origin: left top;
-		    z-index: 999;
+		    z-index: 100;
 		    position: absolute;
 		    top: 0;
 		    left: 0;
 		    width: 200%;
 		    height: 200%;
-		    -webkit-tap-highlight-color: rgba(255,255,255,0);
-		    tap-highlight-color: rgba(255,255,255,0);
+		}
+		.ball {
+			position: absolute;
+			border-radius: 50%;
+			z-index: 101;
+			display: none;
+		}
+		.move-ball {
+			-webkit-animation-name: ballMove;
+			-webkit-animation-iteration-count: 1;
+			-webkit-animation-duration: .8s;
+			-webkit-animation-fill-mode: forwards;
+			animation-name: ballMove;
+			animation-iteration-count: 1;
+			animation-duration: .8s;
+			animation-fill-mode: forwards;
+			display: block;
+		}
+		.score {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			text-align: center;
+			height: 30px;
+			line-height: 30px;
+			width: 100px;
+			font-size: 26px;
+			color: red;
+			z-index: 102;
+			font-style: italic;
+			font-weight: bold;
+			text-shadow: 0 0 1px white;
+			-webkit-transform: translate3d(-50%, -50%, 0) scale(1, 1);
+			transform: translate3d(-50%, -50%, 0) scale(1, 1);
+			pointer-events: none;
+			opacity: 0;
+		}
+		.move-score {
+			-webkit-animation-name: scoreMove;
+			-webkit-animation-iteration-count: 1;
+			-webkit-animation-duration: .7s;
+			-webkit-animation-fill-mode: forwards;
+			animation-name: scoreMove;
+			animation-iteration-count: 1;
+			animation-duration: .7s;
+			animation-fill-mode: forwards;
+			opacity: 1;
 		}
 	</style>
 </head>
 <body>
-	<canvas id="container" class="container"></canvas>
+	<div id="wrap" class="wrap">
+		<canvas id="container" class="container"></canvas>
+	</div>
+	<div id="score" class="score"></div>
+	
 	<script src="./game.js"></script>
 </body>
 </html>
