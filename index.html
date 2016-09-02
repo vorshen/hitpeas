@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+	<title></title>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+		.container {
+		    -webkit-transform: scale(0.5, 0.5);
+		    transform: scale(0.5, 0.5);
+		    -webkit-transform-origin: left top;
+		    transform-origin: left top;
+		    z-index: 999;
+		    position: absolute;
+		    top: 0;
+		    left: 0;
+		    width: 200%;
+		    height: 200%;
+		    -webkit-tap-highlight-color: rgba(255,255,255,0);
+		    tap-highlight-color: rgba(255,255,255,0);
+		}
+	</style>
+</head>
+<body>
+	<canvas id="container" class="container"></canvas>
+	<script src="./game.js"></script>
+</body>
+</html>
